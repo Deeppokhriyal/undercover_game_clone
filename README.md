@@ -6,11 +6,19 @@ A simple multiplayer party game built in Flutter — inspired by the popular soc
 Add 2–3 screenshots here using the format below:
 
 ### 🧑 Player Setup
-![Setup Screen](screenshots/setup.png)
+![Setup Screen](screenshots/description_screen.jpg)
 ### 🕵️ Role Assignment
-![Role View](screenshots/role.png)
+![Role View](screenshots/watch_role.jpg)
+![Role View](screenshots/citizen_role.jpg)
+![Role View](screenshots/undercover_role.jpg)
+### 📜 Description
+![Setup Screen](screenshots/setup_screen1.jpg)
+![Setup Screen](screenshots/setup_screen2.jpg)
 ### 🗳️ Voting Round
-![Voting Screen](screenshots/voting.png)
+![Voting Screen](screenshots/voting.jpg)
+### 🎉 Result
+![Result Screen](screenshots/result_screen1.jpg)
+![Result Screen](screenshots/result_screen2.jpg)
 
 ### 🚀 How to Run the App
 Clone the Repository
