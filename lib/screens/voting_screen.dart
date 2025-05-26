@@ -11,17 +11,33 @@ class VotingScreen extends StatefulWidget {
   _VotingScreenState createState() => _VotingScreenState();
 }
 
-class _VotingScreenState extends State<VotingScreen> {
+class _VotingScreenState extends State<VotingScreen> with TickerProviderStateMixin {
   final Map<String, int> voteCount = {};
   String? selectedName;
 
   late final List<Player> _voters;
   int _currentVoterIndex = 0;
 
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
     _voters = widget.players.where((p) => !p.eliminated).toList();
+
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 600),
+    );
+    _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut);
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
   }
 
   void _submitVote() {
@@ -44,6 +60,8 @@ class _VotingScreenState extends State<VotingScreen> {
       setState(() {
         _currentVoterIndex++;
         selectedName = null;
+        _fadeController.reset();
+        _fadeController.forward();
       });
     } else {
       _handleVoteResults();
@@ -68,7 +86,7 @@ class _VotingScreenState extends State<VotingScreen> {
     }
 
     final activePlayers = widget.players.where((p) => !p.eliminated).toList();
-    final undercoverAlive = activePlayers.where((p) => p.role == 'Undercover').isNotEmpty;
+    final undercoverAlive = activePlayers.any((p) => p.role == 'Undercover');
 
     if (activePlayers.length == 2 && undercoverAlive) {
       _navigateToResult("😈 Undercover Wins!\nOnly 1 citizen left.");
@@ -82,10 +100,28 @@ class _VotingScreenState extends State<VotingScreen> {
     }
   }
 
+  void _navigateToResult(String message) {
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 700),
+        pageBuilder: (_, __, ___) => ResultScreen(message: message),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(scale: animation, child: child),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final voter = _voters[_currentVoterIndex];
-    final candidates = widget.players.where((p) => !p.eliminated && p.name != voter.name).toList();
+    final candidates = widget.players
+        .where((p) => !p.eliminated && p.name != voter.name)
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -104,47 +140,72 @@ class _VotingScreenState extends State<VotingScreen> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.separated(
-                itemCount: candidates.length,
-                separatorBuilder: (_, __) => SizedBox(height: 12),
-                itemBuilder: (_, index) {
-                  final player = candidates[index];
-                  return RadioListTile<String>(
-                    title: Text(
-                      player.name,
-                      style: TextStyle(
-                        fontFamily: 'nexalight',
-                        fontSize: 18,
-                        color: Colors.deepPurple.shade50,
-                      ),
-                    ),
-                    activeColor: Colors.white,
-                    value: player.name,
-                    groupValue: selectedName,
-                    onChanged: (val) => setState(() => selectedName = val),
-                    tileColor: Colors.deepPurple.shade700,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  );
-                },
+              child: AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: ListView.separated(
+                    key: ValueKey(_currentVoterIndex),
+                    itemCount: candidates.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 12),
+                    itemBuilder: (_, index) {
+                      final player = candidates[index];
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: Offset(0, 0.2),
+                          end: Offset.zero,
+                        ).animate(_fadeAnimation),
+                        child: RadioListTile<String>(
+                          title: Text(
+                            player.name,
+                            style: TextStyle(
+                              fontFamily: 'nexalight',
+                              fontSize: 18,
+                              color: Colors.deepPurple.shade50,
+                            ),
+                          ),
+                          activeColor: Colors.white,
+                          value: player.name,
+                          groupValue: selectedName,
+                          onChanged: (val) => setState(() => selectedName = val),
+                          tileColor: Colors.deepPurple.shade700,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
             SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _submitVote,
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.deepPurple,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text(
-                  "Submit Vote",
-                  style: TextStyle(fontFamily: 'nexaheavy', fontSize: 18),
+            GestureDetector(
+              onTapDown: (_) => setState(() => _buttonScale = 0.95),
+              onTapUp: (_) {
+                setState(() => _buttonScale = 1.0);
+                _submitVote();
+              },
+              onTapCancel: () => setState(() => _buttonScale = 1.0),
+              child: AnimatedScale(
+                scale: _buttonScale,
+                duration: Duration(milliseconds: 150),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.deepPurple,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Text(
+                      "Submit Vote",
+                      style: TextStyle(fontFamily: 'nexaheavy', fontSize: 18),
+                    ),
+                    onPressed: _submitVote,
+                  ),
                 ),
               ),
             ),
@@ -154,12 +215,5 @@ class _VotingScreenState extends State<VotingScreen> {
     );
   }
 
-  void _navigateToResult(String message) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ResultScreen(message: message),
-      ),
-    );
-  }
+  double _buttonScale = 1.0;
 }
