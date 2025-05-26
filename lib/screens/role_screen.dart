@@ -12,13 +12,28 @@ class RoleScreen extends StatefulWidget {
   _RoleScreenState createState() => _RoleScreenState();
 }
 
-class _RoleScreenState extends State<RoleScreen> {
+class _RoleScreenState extends State<RoleScreen> with SingleTickerProviderStateMixin {
   int currentIndex = 0;
+  late AnimationController _cardController;
+  late Animation<double> _cardScale;
 
   @override
   void initState() {
     super.initState();
     _assignRoles();
+
+    _cardController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    _cardScale = CurvedAnimation(parent: _cardController, curve: Curves.easeOutBack);
+    _cardController.forward();
+  }
+
+  @override
+  void dispose() {
+    _cardController.dispose();
+    super.dispose();
   }
 
   void _assignRoles() {
@@ -39,7 +54,10 @@ class _RoleScreenState extends State<RoleScreen> {
 
   void _nextPlayer() {
     if (currentIndex < widget.players.length - 1) {
-      setState(() => currentIndex++);
+      setState(() {
+        currentIndex++;
+        _cardController.forward(from: 0);
+      });
     } else {
       Navigator.pushReplacement(
         context,
@@ -59,72 +77,67 @@ class _RoleScreenState extends State<RoleScreen> {
   }
 
   void _showRoleDialog(Player player) {
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Center(
-          child: Text(
-            "Your Role",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-              fontFamily: 'nexaheavy',
-            ),
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              player.role == "Undercover" ? Icons.visibility_off : Icons.person,
-              size: 50,
-              color: player.role == "Undercover" ? Colors.redAccent : Colors.green,
-            ),
-            SizedBox(height: 16),
-            Text(
-              "${player.role}",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'nexalight',
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              "Your Word: ${player.word}",
-              style: TextStyle(
-                fontSize: 18,
-                fontFamily: 'nexalight',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _nextPlayer();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
+      barrierDismissible: false,
+      barrierLabel: "Role",
+      pageBuilder: (_, __, ___) => SizedBox(),
+      transitionBuilder: (_, animation, __, ___) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Center(
               child: Text(
-                "OK",
-                style: TextStyle(fontFamily: 'nexaheavy',color: Colors.white),
+                "Your Role",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, fontFamily: 'nexaheavy'),
               ),
             ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  player.role == "Undercover" ? Icons.visibility_off : Icons.person,
+                  size: 50,
+                  color: player.role == "Undercover" ? Colors.redAccent : Colors.green,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "${player.role}",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, fontFamily: 'nexalight'),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "Your Word: ${player.word}",
+                  style: TextStyle(fontSize: 18, fontFamily: 'nexalight'),
+                ),
+              ],
+            ),
+            actions: [
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _nextPlayer();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Text("OK", style: TextStyle(fontFamily: 'nexaheavy', color: Colors.white)),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final player = widget.players[currentIndex];
+
     return Scaffold(
       appBar: AppBar(
         title: Text("View Role", style: TextStyle(fontFamily: 'nexaheavy')),
@@ -137,52 +150,48 @@ class _RoleScreenState extends State<RoleScreen> {
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
-          child: Card(
-            color: Colors.deepPurple, // dark background for contrast
-            elevation: 6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Pass the device to:",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontFamily: 'nexalight',
+          child: ScaleTransition(
+            scale: _cardScale,
+            child: Card(
+              color: Colors.deepPurple,
+              elevation: 6,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Pass the device to:",
+                      style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'nexalight'),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    player.name,
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontFamily: 'nexaheavy',
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () => _showRoleDialog(player),
-                      icon: Icon(Icons.remove_red_eye),
-                      label: Text(
-                        "View Role",
-                        style: TextStyle(fontFamily: 'nexaheavy'),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.deepPurple,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    SizedBox(height: 10),
+                    Text(
+                      player.name,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'nexaheavy',
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showRoleDialog(player),
+                        icon: Icon(Icons.remove_red_eye),
+                        label: Text("View Role", style: TextStyle(fontFamily: 'nexaheavy')),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.deepPurple,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
