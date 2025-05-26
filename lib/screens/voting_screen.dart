@@ -139,47 +139,68 @@ class _VotingScreenState extends State<VotingScreen> with TickerProviderStateMix
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: Duration(milliseconds: 500),
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: ListView.separated(
-                    key: ValueKey(_currentVoterIndex),
-                    itemCount: candidates.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 12),
-                    itemBuilder: (_, index) {
-                      final player = candidates[index];
-                      return SlideTransition(
-                        position: Tween<Offset>(
-                          begin: Offset(0, 0.2),
-                          end: Offset.zero,
-                        ).animate(_fadeAnimation),
-                        child: RadioListTile<String>(
-                          title: Text(
-                            player.name,
-                            style: TextStyle(
-                              fontFamily: 'nexalight',
-                              fontSize: 18,
-                              color: Colors.deepPurple.shade50,
-                            ),
-                          ),
-                          activeColor: Colors.white,
-                          value: player.name,
-                          groupValue: selectedName,
-                          onChanged: (val) => setState(() => selectedName = val),
-                          tileColor: Colors.deepPurple.shade700,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        Expanded(
+        child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 500),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: GridView.builder(
+            key: ValueKey(_currentVoterIndex),
+            itemCount: candidates.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.9,
+            ),
+            itemBuilder: (_, index) {
+              final player = candidates[index];
+              final isSelected = selectedName == player.name;
+
+              return GestureDetector(
+                onTap: () => setState(() => selectedName = player.name),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: isSelected
+                        ? LinearGradient(colors: [Colors.green, Colors.purple])
+                        : LinearGradient(colors: [Colors.deepPurple.shade700, Colors.indigo]),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
+                    border: isSelected
+                        ? Border.all(color: Colors.white, width: 2)
+                        : null,
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.person, color: Colors.white, size: 40),
+                      SizedBox(height: 12),
+                      Text(
+                        player.name,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'nexalight',
+                          fontSize: 16,
+                          color: Colors.white,
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
+              );
+            },
+          ),
+        ),
+      ),
+    ),
+
             SizedBox(height: 20),
             GestureDetector(
               onTapDown: (_) => setState(() => _buttonScale = 0.95),
@@ -214,6 +235,5 @@ class _VotingScreenState extends State<VotingScreen> with TickerProviderStateMix
       ),
     );
   }
-
   double _buttonScale = 1.0;
 }
