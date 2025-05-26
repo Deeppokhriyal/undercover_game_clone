@@ -8,9 +8,9 @@ Add 2–3 screenshots here using the format below:
 ### 🧑 Player Setup
 ![Setup Screen](screenshots/description_screen.jpg)
 ### 🕵️ Role Assignment
-![Role View](screenshots/role.jpg)
-![Role View](screenshots/role1.jpg)
-![Role View](screenshots/role2.jpg)
+![Role View](screenshot/role.jpg)
+![Role View](screenshot/role1.jpg)
+![Role View](screenshot/role2.jpg)
 ### 📜 Description
 ![Setup Screen](screenshots/setup_screen1.jpg)
 ![Setup Screen](screenshots/setup_screen2.jpg)
