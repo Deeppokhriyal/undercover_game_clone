@@ -15,12 +15,31 @@ class _VotingScreenState extends State<VotingScreen> {
   final Map<String, int> voteCount = {};
   String? selectedName;
 
+  late final List<Player> _voters;
+  int _currentVoterIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _voters = widget.players.where((p) => !p.eliminated).toList();
+  }
+
   void _submitVote() {
-    if (selectedName == null) return;
+    if (selectedName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Please select a player to vote.",
+            style: TextStyle(fontFamily: 'nexalight'),
+          ),
+          backgroundColor: Colors.deepPurple.shade700,
+        ),
+      );
+      return;
+    }
 
     voteCount[selectedName!] = (voteCount[selectedName!] ?? 0) + 1;
 
-    // Move to next voter
     if (_voters.length > _currentVoterIndex + 1) {
       setState(() {
         _currentVoterIndex++;
@@ -32,7 +51,6 @@ class _VotingScreenState extends State<VotingScreen> {
   }
 
   void _handleVoteResults() {
-    // Find top vote count
     int maxVotes = voteCount.values.isEmpty ? 0 : voteCount.values.reduce((a, b) => a > b ? a : b);
     List<String> topVoted = voteCount.entries
         .where((entry) => entry.value == maxVotes)
@@ -40,7 +58,6 @@ class _VotingScreenState extends State<VotingScreen> {
         .toList();
 
     if (topVoted.length == 1) {
-      // One player has highest votes - eliminate them
       final eliminated = widget.players.firstWhere((p) => p.name == topVoted.first);
       eliminated.eliminated = true;
 
@@ -49,14 +66,13 @@ class _VotingScreenState extends State<VotingScreen> {
         return;
       }
     }
-    // Check if only 2 players left
+
     final activePlayers = widget.players.where((p) => !p.eliminated).toList();
     final undercoverAlive = activePlayers.where((p) => p.role == 'Undercover').isNotEmpty;
 
     if (activePlayers.length == 2 && undercoverAlive) {
       _navigateToResult("😈 Undercover Wins!\nOnly 1 citizen left.");
     } else {
-      // Continue to next round
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -66,37 +82,72 @@ class _VotingScreenState extends State<VotingScreen> {
     }
   }
 
-  late final List<Player> _voters;
-  int _currentVoterIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _voters = widget.players.where((p) => !p.eliminated).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     final voter = _voters[_currentVoterIndex];
     final candidates = widget.players.where((p) => !p.eliminated && p.name != voter.name).toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text("Vote: ${voter.name}'s Turn")),
+      appBar: AppBar(
+        title: Text(
+          "Vote: ${voter.name}'s Turn",
+          style: TextStyle(fontFamily: 'nexaheavy'),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [Colors.deepPurple, Colors.indigo]),
+          ),
+        ),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(20),
         child: Column(
           children: [
-            ...candidates.map((player) => RadioListTile<String>(
-              title: Text(player.name),
-              value: player.name,
-              groupValue: selectedName,
-              onChanged: (val) => setState(() => selectedName = val),
-            )),
-            Spacer(),
-            ElevatedButton(
-              onPressed: _submitVote,
-              child: Text("Submit Vote"),
-            )
+            Expanded(
+              child: ListView.separated(
+                itemCount: candidates.length,
+                separatorBuilder: (_, __) => SizedBox(height: 12),
+                itemBuilder: (_, index) {
+                  final player = candidates[index];
+                  return RadioListTile<String>(
+                    title: Text(
+                      player.name,
+                      style: TextStyle(
+                        fontFamily: 'nexalight',
+                        fontSize: 18,
+                        color: Colors.deepPurple.shade50,
+                      ),
+                    ),
+                    activeColor: Colors.white,
+                    value: player.name,
+                    groupValue: selectedName,
+                    onChanged: (val) => setState(() => selectedName = val),
+                    tileColor: Colors.deepPurple.shade700,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _submitVote,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.deepPurple,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(
+                  "Submit Vote",
+                  style: TextStyle(fontFamily: 'nexaheavy', fontSize: 18),
+                ),
+              ),
+            ),
           ],
         ),
       ),
