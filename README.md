@@ -9,8 +9,12 @@ Add 2–3 screenshots here using the format below:
 ![Setup Screen](screenshots/setup.png)
 ### 🕵️ Role Assignment
 ![Role View](screenshots/role.png)
+### 📜 Description
+![Description Screen](screenshots/description.png)
 ### 🗳️ Voting Round
 ![Voting Screen](screenshots/voting.png)
+### 🎉 Result
+![Result Screen](screenshots/result.png)
 
 ### 🚀 How to Run the App
 Clone the Repository
