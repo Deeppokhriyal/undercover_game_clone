@@ -15,8 +15,7 @@ Add 2–3 screenshots here using the format below:
 ### 🚀 How to Run the App
 Clone the Repository
 
-git clone https://github.com/your-username/undercover-flutter.git
-cd undercover-flutter
+git clone https://github.com/Deeppokhriyal/undercover_game_clone.git
 
 Install Dependencies
 
