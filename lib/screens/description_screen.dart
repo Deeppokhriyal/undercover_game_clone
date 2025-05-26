@@ -30,7 +30,17 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final player = widget.players.where((p) => !p.eliminated).toList()[currentIndex];
+    final remainingPlayers = widget.players.where((p) => !p.eliminated).toList();
+
+    // Safety check (optional but useful for robustness)
+    if (currentIndex >= remainingPlayers.length) {
+      return Scaffold(
+        body: Center(child: Text('No more players to describe.')),
+      );
+    }
+
+    final player = remainingPlayers[currentIndex];
+
     return Scaffold(
       appBar: AppBar(title: Text("Describe Your Word")),
       body: Padding(
@@ -47,7 +57,18 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
             ),
             Spacer(),
             ElevatedButton(
-              onPressed: _next,
+              onPressed: () {
+                if (currentIndex < remainingPlayers.length - 1) {
+                  setState(() => currentIndex++);
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => VotingScreen(players: widget.players),
+                    ),
+                  );
+                }
+              },
               child: Text("Next"),
             ),
           ],
