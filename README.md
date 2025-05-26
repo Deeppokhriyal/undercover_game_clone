@@ -11,7 +11,7 @@ A simple multiplayer party game built in Flutter — inspired by the popular soc
 ![Role View](screenshot/role1.png)
 ![Role View](screenshot/role2.png)
 ### 📜 Description
-![Setup Screen](screenshot/descrption1.png)
+![Setup Screen](screenshot/description1.png)
 ![Setup Screen](screenshot/description2.png)
 ### 🗳️ Voting Round
 ![Voting Screen](screenshot/voting.png)
