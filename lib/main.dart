@@ -11,6 +11,7 @@ class UndercoverGameApp extends StatelessWidget {
     return MaterialApp(
       title: 'Undercover Game',
       theme: ThemeData(primarySwatch: Colors.deepPurple),
+      debugShowCheckedModeBanner: false, // This hides the debug banner
       home: SetupScreen(),
     );
   }

@@ -18,11 +18,14 @@ class _VotingScreenState extends State<VotingScreen> {
   void _submitVote() {
     if (selectedName == null) return;
 
-    final votedPlayer = widget.players.firstWhere((p) => p.name == selectedName);
+    final votedPlayer = widget.players.firstWhere((p) =>
+    p.name == selectedName);
     votedPlayer.eliminated = true;
 
     final remaining = widget.players.where((p) => !p.eliminated).toList();
-    final undercoverRemaining = remaining.where((p) => p.role == 'Undercover').length;
+    final undercoverRemaining = remaining
+        .where((p) => p.role == 'Undercover')
+        .length;
 
     if (undercoverRemaining == 0) {
       // Citizens win
@@ -77,7 +80,8 @@ class _VotingScreenState extends State<VotingScreen> {
 // }
   @override
   Widget build(BuildContext context) {
-    final remainingPlayers = widget.players.where((p) => !p.eliminated).toList();
+    final remainingPlayers = widget.players.where((p) => !p.eliminated)
+        .toList();
     return Scaffold(
       appBar: AppBar(title: Text("Vote for Undercover")),
       body: Column(
@@ -100,4 +104,4 @@ class _VotingScreenState extends State<VotingScreen> {
       ),
     );
   }
-
+}
