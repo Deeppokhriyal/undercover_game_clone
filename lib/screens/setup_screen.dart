@@ -153,43 +153,75 @@ class _SetupScreenState extends State<SetupScreen>
     Navigator.push(
       context,
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 1200),
+        transitionDuration: const Duration(milliseconds: 800),
         pageBuilder: (_, __, ___) => RoleScreen(players: players),
         transitionsBuilder: (_, animation, __, child) {
-          final slideTween = TweenSequence<Offset>([
-            TweenSequenceItem(
-              tween: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
-                  .chain(CurveTween(curve: Curves.easeOutBack)),
-              weight: 50,
-            ),
-            TweenSequenceItem(
-              tween: Tween<Offset>(begin: Offset.zero, end: const Offset(0, 1))
-                  .chain(CurveTween(curve: Curves.easeIn)),
-              weight: 50,
-            ),
-          ]).animate(animation);
+          final offsetAnimation = Tween<Offset>(
+            begin: const Offset(0, 1),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
 
-          final fadeTween = TweenSequence<double>([
-            TweenSequenceItem(
-              tween: Tween<double>(begin: 0, end: 1).chain(CurveTween(curve: Curves.easeIn)),
-              weight: 50,
-            ),
-            TweenSequenceItem(
-              tween: Tween<double>(begin: 1, end: 0).chain(CurveTween(curve: Curves.easeOut)),
-              weight: 50,
-            ),
-          ]).animate(animation);
+          final fadeAnimation = Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeIn));
 
           return FadeTransition(
-            opacity: fadeTween,
+            opacity: fadeAnimation,
             child: SlideTransition(
-              position: slideTween,
+              position: offsetAnimation,
               child: child,
             ),
           );
         },
       ),
     );
+
+    // Navigator.push(
+    //   context,
+    //   PageRouteBuilder(
+    //     transitionDuration: const Duration(milliseconds: 1200),
+    //     pageBuilder: (_, __, ___) => RoleScreen(players: players),
+    //     transitionsBuilder: (_, animation, __, child) {
+    //       final slideTween = TweenSequence<Offset>([
+    //         TweenSequenceItem(
+    //           tween: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+    //               .chain(CurveTween(curve: Curves.easeOutBack)),
+    //           weight: 50,
+    //         ),
+    //         TweenSequenceItem(
+    //           tween: Tween<Offset>(begin: Offset.zero, end: const Offset(0, 1))
+    //               .chain(CurveTween(curve: Curves.easeIn)),
+    //           weight: 50,
+    //         ),
+    //       ]).animate(animation);
+    //
+    //       final fadeTween = Tween<double>(begin: 0, end: 1).animate(
+    //         CurvedAnimation(parent: animation, curve: Curves.easeIn),
+    //       );
+    //
+    //
+    //       // final fadeTween = TweenSequence<double>([
+    //       //   TweenSequenceItem(
+    //       //     tween: Tween<double>(begin: 0, end: 1).chain(CurveTween(curve: Curves.easeIn)),
+    //       //     weight: 50,
+    //       //   ),
+    //       //   // TweenSequenceItem(
+    //       //   //   tween: Tween<double>(begin: 1, end: 0).chain(CurveTween(curve: Curves.easeOut)),
+    //       //   //   weight: 50,
+    //       //   // ),
+    //       // ]).animate(animation);
+    //
+    //       return FadeTransition(
+    //         opacity: fadeTween,
+    //         child: SlideTransition(
+    //           position: slideTween,
+    //           child: child,
+    //         ),
+    //       );
+    //     },
+    //   ),
+    // );
   }
 
   @override

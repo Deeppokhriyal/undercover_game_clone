@@ -120,6 +120,7 @@ class _VotingScreenState extends State<VotingScreen> with TickerProviderStateMix
         .toList();
 
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Vote: ${voter.name}'s Turn", style: const TextStyle(fontFamily: 'nexaheavy')),
         flexibleSpace: Container(
