@@ -16,7 +16,7 @@ class _SetupScreenState extends State<SetupScreen>
   @override
   void initState() {
     super.initState();
-    _playerNames = List.filled(_numPlayers, '');
+    _playerNames = List.filled(_numPlayers, '', growable: true);
     Future.delayed(Duration(milliseconds: 100), () {
       setState(() {
         _initialLoad = true;
@@ -28,7 +28,7 @@ class _SetupScreenState extends State<SetupScreen>
     if (_playerNames.length < newCount) {
       _playerNames.addAll(List.filled(newCount - _playerNames.length, ''));
     } else if (_playerNames.length > newCount) {
-      _playerNames = _playerNames.sublist(0, newCount);
+      _playerNames = List.from(_playerNames.sublist(0, newCount));
     }
   }
 
@@ -71,7 +71,8 @@ class _SetupScreenState extends State<SetupScreen>
                   filled: true,
                   fillColor: Colors.white24,
                   hintText: "Player Name",
-                  hintStyle: TextStyle(color: Colors.white70, fontFamily: 'nexalight'),
+                  hintStyle:
+                  TextStyle(color: Colors.white70, fontFamily: 'nexalight'),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -86,7 +87,8 @@ class _SetupScreenState extends State<SetupScreen>
                     onPressed: () => Navigator.pop(context),
                     child: Text(
                       "Cancel",
-                      style: TextStyle(color: Colors.white, fontFamily: 'nexalight'),
+                      style: TextStyle(
+                          color: Colors.white, fontFamily: 'nexalight'),
                     ),
                   ),
                   SizedBox(width: 10),
@@ -188,8 +190,7 @@ class _SetupScreenState extends State<SetupScreen>
                         .map((e) => DropdownMenuItem(
                       value: e,
                       child: Text('$e Players',
-                          style:
-                          TextStyle(fontFamily: 'nexalight')),
+                          style: TextStyle(fontFamily: 'nexalight')),
                     ))
                         .toList(),
                     onChanged: (val) {
@@ -208,10 +209,10 @@ class _SetupScreenState extends State<SetupScreen>
               Expanded(
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3, // 3 per row
+                    crossAxisCount: 3,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: 1, // square box
+                    childAspectRatio: 1,
                   ),
                   itemCount: _numPlayers,
                   itemBuilder: (context, index) => GestureDetector(
@@ -234,7 +235,8 @@ class _SetupScreenState extends State<SetupScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.person_add_alt_outlined, color: Colors.white, size: 50),
+                          Icon(Icons.person_add_alt_outlined,
+                              color: Colors.white, size: 50),
                           SizedBox(height: 6),
                           Text(
                             _playerNames[index].isEmpty
@@ -252,8 +254,7 @@ class _SetupScreenState extends State<SetupScreen>
                     ),
                   ),
                 ),
-              )
-,
+              ),
               SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -261,8 +262,8 @@ class _SetupScreenState extends State<SetupScreen>
                   onPressed: _startGame,
                   icon: Icon(Icons.play_arrow, color: Colors.white),
                   label: Text("Start Game",
-                      style:
-                      TextStyle(color: Colors.white, fontFamily: 'nexalight')),
+                      style: TextStyle(
+                          color: Colors.white, fontFamily: 'nexalight')),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
