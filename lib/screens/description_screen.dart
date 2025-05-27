@@ -66,8 +66,15 @@ class _DescriptionScreenState extends State<DescriptionScreen>
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      body: SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20, // keyboard-aware padding
+        ),
         child: FadeTransition(
           opacity: _fadeAnimation,
           child: Column(
@@ -149,7 +156,7 @@ class _DescriptionScreenState extends State<DescriptionScreen>
               SizedBox(
                 height: 250,
                 child: Lottie.asset(
-                  'assets/animations/ANIM.json', // Yahan apni animation ka path do
+                  'assets/animations/ANIM.json',
                   repeat: true,
                   fit: BoxFit.contain,
                 ),
@@ -158,6 +165,8 @@ class _DescriptionScreenState extends State<DescriptionScreen>
           ),
         ),
       ),
+    ),
+
     );
   }
 }

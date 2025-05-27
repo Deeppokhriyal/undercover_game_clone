@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class ResultScreen extends StatefulWidget {
   final String message;
@@ -49,21 +50,26 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
         ),
       ),
       body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SlideTransition(
-            position: _slideAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
             child: Card(
               color: Colors.deepPurple,
-              elevation: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 24),
+              elevation: 10,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              margin: const EdgeInsets.symmetric(horizontal: 24),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.emoji_events, size: 60, color: Colors.amberAccent),
+                    Lottie.asset(
+                      'assets/animations/ANIM2.json',
+                      width: 120,
+                      height: 120,
+                      repeat: false,
+                    ),
                     const SizedBox(height: 20),
                     Text(
                       widget.message,
