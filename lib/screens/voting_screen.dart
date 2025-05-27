@@ -168,13 +168,17 @@ class _VotingScreenState extends State<VotingScreen> with TickerProviderStateMix
                           children: [
                             const Icon(Icons.person, color: Colors.white, size: 40),
                             const SizedBox(height: 12),
-                            Text(
-                              player.name,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: 'nexalight',
-                                fontSize: 16,
-                                color: Colors.white,
+                            Flexible(
+                              child: Text(
+                                player.name,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontFamily: 'nexalight',
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
