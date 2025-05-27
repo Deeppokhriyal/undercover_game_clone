@@ -12,28 +12,14 @@ class RoleScreen extends StatefulWidget {
   _RoleScreenState createState() => _RoleScreenState();
 }
 
-class _RoleScreenState extends State<RoleScreen> with SingleTickerProviderStateMixin {
+class _RoleScreenState extends State<RoleScreen> {
   int currentIndex = 0;
-  late AnimationController _cardController;
-  late Animation<double> _cardScale;
+  bool showBack = false;
 
   @override
   void initState() {
     super.initState();
     _assignRoles();
-
-    _cardController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 500),
-    );
-    _cardScale = CurvedAnimation(parent: _cardController, curve: Curves.easeOutBack);
-    _cardController.forward();
-  }
-
-  @override
-  void dispose() {
-    _cardController.dispose();
-    super.dispose();
   }
 
   void _assignRoles() {
@@ -56,82 +42,14 @@ class _RoleScreenState extends State<RoleScreen> with SingleTickerProviderStateM
     if (currentIndex < widget.players.length - 1) {
       setState(() {
         currentIndex++;
-        _cardController.forward(from: 0);
+        showBack = false;
       });
     } else {
       Navigator.pushReplacement(
         context,
-        PageRouteBuilder(
-          transitionDuration: Duration(milliseconds: 500),
-          pageBuilder: (_, __, ___) => DescriptionScreen(players: widget.players),
-          transitionsBuilder: (_, animation, __, child) {
-            return SlideTransition(
-              position: Tween(begin: Offset(1, 0), end: Offset.zero)
-                  .animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
-              child: child,
-            );
-          },
-        ),
+        MaterialPageRoute(builder: (_) => DescriptionScreen(players: widget.players)),
       );
     }
-  }
-
-  void _showRoleDialog(Player player) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierLabel: "Role",
-      pageBuilder: (_, __, ___) => SizedBox(),
-      transitionBuilder: (_, animation, __, ___) {
-        return ScaleTransition(
-          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-          child: AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Center(
-              child: Text(
-                "Your Role",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, fontFamily: 'nexaheavy'),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  player.role == "Undercover" ? Icons.visibility_off : Icons.person,
-                  size: 50,
-                  color: player.role == "Undercover" ? Colors.redAccent : Colors.green,
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "${player.role}",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, fontFamily: 'nexalight'),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  "Your Word: ${player.word}",
-                  style: TextStyle(fontSize: 18, fontFamily: 'nexalight'),
-                ),
-              ],
-            ),
-            actions: [
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _nextPlayer();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  child: Text("OK", style: TextStyle(fontFamily: 'nexaheavy', color: Colors.white)),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -139,6 +57,7 @@ class _RoleScreenState extends State<RoleScreen> with SingleTickerProviderStateM
     final player = widget.players[currentIndex];
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("View Role", style: TextStyle(fontFamily: 'nexaheavy')),
         flexibleSpace: Container(
@@ -150,51 +69,107 @@ class _RoleScreenState extends State<RoleScreen> with SingleTickerProviderStateM
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
-          child: ScaleTransition(
-            scale: _cardScale,
-            child: Card(
-              color: Colors.deepPurple,
-              elevation: 6,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Pass the device to:",
-                      style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'nexalight'),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      player.name,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontFamily: 'nexaheavy',
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () => _showRoleDialog(player),
-                        icon: Icon(Icons.remove_red_eye),
-                        label: Text("View Role", style: TextStyle(fontFamily: 'nexaheavy')),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.deepPurple,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          child: GestureDetector(
+            onTap: () {
+              if (!showBack) {
+                setState(() {
+                  showBack = true;
+                });
+              }
+            },
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 600),
+              transitionBuilder: __transitionBuilder,
+              layoutBuilder: (widget, list) => Stack(children: [widget!, ...list]),
+              switchInCurve: Curves.easeInBack,
+              switchOutCurve: Curves.easeInBack.flipped,
+              child: showBack
+                  ? _buildCardBack(player)
+                  : _buildCardFront(player.name),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget __transitionBuilder(Widget widget, Animation<double> animation) {
+    final rotate = Tween(begin: pi, end: 0.0).animate(animation);
+    return AnimatedBuilder(
+      animation: rotate,
+      child: widget,
+      builder: (context, child) {
+        final isUnder = (ValueKey(showBack) != widget!.key);
+        final tilt = (animation.value - 0.5).abs() - 0.5;
+        final value = isUnder ? min(rotate.value, pi / 2) : rotate.value;
+        return Transform(
+          transform: Matrix4.rotationY(value)..setEntry(3, 0, 0.001),
+          alignment: Alignment.center,
+          child: child,
+        );
+      },
+    );
+  }
+
+  Widget _buildCardFront(String name) {
+    return Card(
+      key: ValueKey(false),
+      color: Colors.deepPurple,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 6,
+      child: Container(
+        width: 300,
+        height: 350,
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Pass the device to:", style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'nexalight')),
+            SizedBox(height: 10),
+            Text(name, style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'nexaheavy')),
+            SizedBox(height: 20),
+            Icon(Icons.remove_red_eye, size: 50, color: Colors.white),
+            SizedBox(height: 10),
+            Text("Tap to View Role", style: TextStyle(color: Colors.white70, fontFamily: 'nexalight')),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardBack(Player player) {
+    return Card(
+      key: ValueKey(true),
+      color: Colors.grey.shade200,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 6,
+      child: Container(
+        width: 300,
+        height: 350,
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              player.role == "Undercover" ? Icons.visibility_off : Icons.person,
+              size: 50,
+              color: player.role == "Undercover" ? Colors.redAccent : Colors.green,
+            ),
+            SizedBox(height: 16),
+            Text(player.role, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'nexaheavy')),
+            SizedBox(height: 8),
+            Text("Your Word:", style: TextStyle(fontFamily: 'nexalight')),
+            Text(player.word, style: TextStyle(fontSize: 22, fontFamily: 'nexaheavy')),
+            SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _nextPlayer,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: Text("Next", style: TextStyle(color: Colors.white, fontFamily: 'nexaheavy')),
+            ),
+          ],
         ),
       ),
     );

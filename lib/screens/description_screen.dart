@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';  // Lottie import karo
 import '../models/players.dart';
 import 'voting_screen.dart';
 
@@ -66,67 +67,94 @@ class _DescriptionScreenState extends State<DescriptionScreen>
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20.0),
         child: FadeTransition(
           opacity: _fadeAnimation,
-          child: Card(
-            color: Colors.deepPurple,
-            elevation: 6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "${player.name}, describe your word:",
-                    style: const TextStyle(
-                      fontSize: 22,
-                      color: Colors.white,
-                      fontFamily: 'nexaheavy',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    onChanged: (value) {
-                      descriptions[player.name] = value;
-                    },
-                    style: const TextStyle(color: Colors.white, fontFamily: 'nexalight'),
-                    decoration: InputDecoration(
-                      labelText: "Description (don't say the word!)",
-                      labelStyle: const TextStyle(color: Colors.white70, fontFamily: 'nexalight'),
-                      filled: true,
-                      fillColor: Colors.deepPurple.shade400,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide.none,
+          child: Column(
+            children: [
+              Card(
+                color: Colors.deepPurple.shade700,
+                elevation: 6,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "${player.name}, describe your word:",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontFamily: 'nexaheavy',
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 40),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _next,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.deepPurple,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                      const SizedBox(height: 20),
+                      TextField(
+                        onChanged: (value) {
+                          descriptions[player.name] = value;
+                        },
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'nexalight',
+                          fontSize: 16,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: "Description (don't say the word!)",
+                          labelStyle: const TextStyle(
+                            color: Colors.white70,
+                            fontFamily: 'nexalight',
+                            fontSize: 14,
+                          ),
+                          filled: true,
+                          fillColor: Colors.deepPurple.shade400,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                        ),
+                        maxLines: 3,
+                        cursorColor: Colors.white,
+                      ),
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _next,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.deepPurple.shade800,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 4,
+                          ),
+                          child: const Text(
+                            "Next",
+                            style: TextStyle(
+                              fontFamily: 'nexaheavy',
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ),
-                      child: const Text(
-                        "Next",
-                        style: TextStyle(fontFamily: 'nexaheavy', fontSize: 18),
-                      ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 250,
+                child: Lottie.asset(
+                  'assets/animations/ANIM.json', // Yahan apni animation ka path do
+                  repeat: true,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ],
           ),
         ),
       ),
