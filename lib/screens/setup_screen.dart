@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/players.dart';
 import 'role_screen.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class SetupScreen extends StatefulWidget {
   @override
@@ -119,29 +120,70 @@ class _SetupScreenState extends State<SetupScreen>
     );
   }
 
+
   void _startGame() {
     if (_playerNames.any((name) => name.trim().isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter all player names.")),
+      final snackBar = SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 16),
+        content: _SlidingSnackbarContent(
+          child: Container(
+            constraints: const BoxConstraints(maxHeight: 110),
+            child: AwesomeSnackbarContent(
+              title: 'Oops!',
+              message: 'Please enter all player names.',
+              contentType: ContentType.warning,
+              inMaterialBanner: false,
+            ),
+          ),
+        ),
       );
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
       return;
     }
 
-    List<Player> players =
-    _playerNames.map((name) => Player(name: name)).toList();
+    List<Player> players = _playerNames.map((name) => Player(name: name)).toList();
 
     Navigator.push(
       context,
       PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 600),
+        transitionDuration: const Duration(milliseconds: 1200),
         pageBuilder: (_, __, ___) => RoleScreen(players: players),
         transitionsBuilder: (_, animation, __, child) {
+          final slideTween = TweenSequence<Offset>([
+            TweenSequenceItem(
+              tween: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+                  .chain(CurveTween(curve: Curves.easeOutBack)),
+              weight: 50,
+            ),
+            TweenSequenceItem(
+              tween: Tween<Offset>(begin: Offset.zero, end: const Offset(0, 1))
+                  .chain(CurveTween(curve: Curves.easeIn)),
+              weight: 50,
+            ),
+          ]).animate(animation);
+
+          final fadeTween = TweenSequence<double>([
+            TweenSequenceItem(
+              tween: Tween<double>(begin: 0, end: 1).chain(CurveTween(curve: Curves.easeIn)),
+              weight: 50,
+            ),
+            TweenSequenceItem(
+              tween: Tween<double>(begin: 1, end: 0).chain(CurveTween(curve: Curves.easeOut)),
+              weight: 50,
+            ),
+          ]).animate(animation);
+
           return FadeTransition(
-            opacity: animation,
+            opacity: fadeTween,
             child: SlideTransition(
-              position: Tween<Offset>(begin: Offset(1, 0), end: Offset.zero)
-                  .animate(CurvedAnimation(
-                  parent: animation, curve: Curves.easeInOut)),
+              position: slideTween,
               child: child,
             ),
           );
@@ -278,6 +320,62 @@ class _SetupScreenState extends State<SetupScreen>
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SlidingSnackbarContent extends StatefulWidget {
+  final Widget child;
+  const _SlidingSnackbarContent({required this.child});
+
+  @override
+  State<_SlidingSnackbarContent> createState() => _SlidingSnackbarContentState();
+}
+class _SlidingSnackbarContentState extends State<_SlidingSnackbarContent>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _controller.forward();
+
+    _controller.addStatusListener((status) async {
+      if (status == AnimationStatus.completed) {
+        // Wait for 1.2s then reverse animation smoothly
+        await Future.delayed(const Duration(milliseconds: 1200));
+        if (mounted) {
+          await _controller.reverse();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Make sure to stop animation before dispose
+    _controller.stop();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: _slideAnimation,
+      child: widget.child,
     );
   }
 }
