@@ -3,22 +3,22 @@
 A simple multiplayer party game built in Flutter — inspired by the popular social deduction game Undercover. Players are secretly assigned words and roles (Citizen or Undercover) and must describe their word and vote to eliminate the impostor!
 
 ### 📱 Screenshots
-Add 2–3 screenshots here using the format below:
 
 ### 🧑 Player Setup
-![Setup Screen](screenshots/description_screen.jpg)
+![Setup Screen](screenshot/setup.png)
+![Setup Screen](screenshot/setup2.png)
 ### 🕵️ Role Assignment
-![Role View](screenshots/watch_role.jpg)
-![Role View](screenshots/citizen_role.jpg)
-![Role View](screenshots/undercover_role.jpg)
+![Role View](screenshot/role.png)
+![Role View](screenshot/role1.png)
+![Role View](screenshot/role2.png)
 ### 📜 Description
-![Setup Screen](screenshots/setup_screen1.jpg)
-![Setup Screen](screenshots/setup_screen2.jpg)
+![Setup Screen](screenshot/description1.png)
+![Setup Screen](screenshot/description2.png)
 ### 🗳️ Voting Round
-![Voting Screen](screenshots/voting.jpg)
+![Voting Screen](screenshot/voting.png)
 ### 🎉 Result
-![Result Screen](screenshots/result_screen1.jpg)
-![Result Screen](screenshots/result_screen2.jpg)
+![Result Screen](screenshot/result1.png)
+![Result Screen](screenshot/result2.png)
 
 ### 🚀 How to Run the App
 Clone the Repository
