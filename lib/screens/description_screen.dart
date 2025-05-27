@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';  // Lottie import karo
+import 'package:lottie/lottie.dart';
 import '../models/players.dart';
 import 'voting_screen.dart';
 
@@ -33,9 +33,9 @@ class _DescriptionScreenState extends State<DescriptionScreen>
     final activePlayers = widget.players.where((p) => !p.eliminated).toList();
 
     if (currentIndex < activePlayers.length - 1) {
-      await _controller.reverse(); // fade out
+      await _controller.reverse();
       setState(() => currentIndex++);
-      await _controller.forward(); // fade in next player
+      await _controller.forward();
     } else {
       Navigator.pushReplacement(
         context,
@@ -73,7 +73,7 @@ class _DescriptionScreenState extends State<DescriptionScreen>
           left: 20,
           right: 20,
           top: 20,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20, // keyboard-aware padding
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
         ),
         child: FadeTransition(
           opacity: _fadeAnimation,

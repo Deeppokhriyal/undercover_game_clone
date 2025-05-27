@@ -354,7 +354,6 @@ class _SlidingSnackbarContentState extends State<_SlidingSnackbarContent>
 
     _controller.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
-        // Wait for 1.2s then reverse animation smoothly
         await Future.delayed(const Duration(milliseconds: 1200));
         if (mounted) {
           await _controller.reverse();
@@ -365,7 +364,6 @@ class _SlidingSnackbarContentState extends State<_SlidingSnackbarContent>
 
   @override
   void dispose() {
-    // Make sure to stop animation before dispose
     _controller.stop();
     _controller.dispose();
     super.dispose();
