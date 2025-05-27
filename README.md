@@ -7,6 +7,7 @@ A simple multiplayer party game built in Flutter — inspired by the popular soc
 ### 🧑 Player Setup
 ![Setup Screen](screenshot/setup.png)
 ![Setup Screen](screenshot/setup2.png)
+![Setup Screen](screenshot/setup3.png)
 ### 🕵️ Role Assignment
 ![Role View](screenshot/role.png)
 ![Role View](screenshot/role1.png)
